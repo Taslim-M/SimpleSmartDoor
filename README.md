@@ -5,7 +5,7 @@ Repository owners - See contributors
 
 ## Parts List
 
-| Number        | omponent Name| Model  |
+| Number        | Component Name| Model  |
 | ------------- |:-------------:| -----:|
 |1|Dip Switch|	-|
 |2|Precision Centigrade Temperature Sensor	|LM35|
