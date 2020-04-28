@@ -37,7 +37,9 @@ INTR_PIN=10
 global password
 password= '12'
 
+global photo_path
 photo_path='/home/pi/Desktop/myImage.jpg'
+global video_path
 video_path='/home/pi/Desktop/myVideo.h264'
 
 def setup_board():          #SETUP The board  
