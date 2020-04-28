@@ -26,7 +26,7 @@ ENABLE_PIN = 22
 global SERIAL_PORT
 SERIAL_PORT= '/dev/ttyS0'
 
-global door_switch #We are assuming there is an external door controller which takes in 1 to open and 0 to close door
+global door_switch #the Door switch is simulated by a yellow LED - On to show door open
 door_switch = 16
 
 global ser #Serial communucation
@@ -69,7 +69,7 @@ def setup_board():          #SETUP The board
                     stopbits= serial.STOPBITS_ONE,
                     timeout =1)
     #IR Detector Interrupt setup
-    GPIO.setup(INTR_PIN, GPIO.IN, pull_up_down = GPIO.PUD_)
+    GPIO.setup(INTR_PIN, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
     #interrupt call defintion
     GPIO.add_event_detect(INTR_PIN, GPIO.RISING, callback= door_bell_pressed,bouncetime=2000)
 
@@ -90,10 +90,10 @@ def setup_board():          #SETUP The board
     ADC.setup (0x48) #Address of the ADC on i2c in hex
 
 def open_door():
-    GPIO.output(door_switch,True) # open the door- High tells door controller to open door
+    GPIO.output(door_switch,True) # open the door- High tells Yellow LED to On- simulate open
 
 def close_door():
-    GPIO.output(door_switch,False) # close the door - Low tells door controller to close door
+    GPIO.output(door_switch,False) # close the door - Low tells Yellow LED to OFF- simulate close
 
 def take_image():
     Mycamera = PiCamera()     # Create an instance of PiCamera class called Mycamera                                                     
@@ -244,8 +244,11 @@ def intruder():
 @smart_door_app.route("/changepassword/<old_password>/<new_password>")  #Dynamic route 1 - change system password
 def change_password_flask(old_password,new_password): #Take in the old and new password
     if check_password(old_password): #Make sure the old password is correct
-        change_password(old_password,new_password) #call function to update password
-        return "Password has been changed" #return succuess msg
+        if len(new_password) == 2:
+            change_password(old_password,new_password) #call function to update password
+            return "Password has been changed" #return succuess msg
+        else:
+            return "Password should be 2 digits" #return error msg - lenght mismatch
     else: #Retun failure message
         return "password validation failed"
 
@@ -332,4 +335,3 @@ def keypad():
 if __name__ == "__main__":#Main function - start the app on port 5060
     setup_board() #Setup ALL GPIOS and Communicaiton ports, LCD, RFID, ADC
     smart_door_app.run(debug=True, host = '0.0.0.0', port = 5060) 
-
