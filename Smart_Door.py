@@ -4,7 +4,6 @@ import serial
 import LCD1602 as LCD
 from picamera import PiCamera    
 import PCF8591 as ADC
-import time
 from datetime import datetime
 from flask import Flask
 from flask import send_file
@@ -90,7 +89,6 @@ def setup_board():          #SETUP The board
     #ADC Initialization
     ADC.setup (0x48) #Address of the ADC on i2c in hex
 
-
 def open_door():
     GPIO.output(door_switch,True) # open the door- High tells door controller to open door
 
@@ -98,23 +96,22 @@ def close_door():
     GPIO.output(door_switch,False) # close the door - Low tells door controller to close door
 
 def take_image():
-    Mycamera = PiCamera()     # Create an instance of PiCamera class called Mycamera		                                             
-    time.sleep(5)  #  Adds a pause before capturing the image; gives time to the sensor to adjust in seconds 	
+    Mycamera = PiCamera()     # Create an instance of PiCamera class called Mycamera                                                     
+    time.sleep(5)  #  Adds a pause before capturing the image; gives time to the sensor to adjust in seconds    
     timestamp = datetime.now().isoformat()
     Mycamera.resolution= (1280,720)
     Mycamera.annotate_text = "Person entered at time %s" %timestamp #string to annotate photo
-    Mycamera.capture(photo_path) # Captures the image and  stores it in /home/pi/Desktop path                                                      	 
+    Mycamera.capture(photo_path) # Captures the image and  stores it in /home/pi/Desktop path                                                        
     Mycamera.close()    #  Closes the camera instance and cleans up the resources  stops all recording
 
 def take_video():
     Mycamera = PiCamera()     # Create an instance of PiCamera class called Mycamera
     timestamp = datetime.now().isoformat()
-    Mycamera.annotate_text = "Intruder attempted to enter at time %s" %timestamp #string to annotate video		                                             
-    Mycamera.start_recording(video_path) # start recording and stores the video on video path	
+    Mycamera.annotate_text = "Intruder attempted to enter at time %s" %timestamp #string to annotate video                                                   
+    Mycamera.start_recording(video_path) # start recording and stores the video on video path   
     time.sleep(5) # capture the vieo for 5 seconds
-    Mycamera.stop_recording()                                                      	 
+    Mycamera.stop_recording()                                                        
     Mycamera.close()    #  Closes the camera instance and cleans up the resources  stops all recording
-
 
 def validate_rfid(code):
     #a valid code will be 12 chars (bytes) long with the first char being
@@ -219,7 +216,6 @@ def door_bell_pressed():
         LCD.clear()
         LCD.write(0,0,"Invalid Selection")  #print on LCD as required
 
-
 #Flask Routes
 
 @smart_door_app.route("/")  #Welcome index route- this is like our first default page
@@ -233,7 +229,6 @@ def indexroute():
     humidity = (Hum_volts - 0.985)/0.0307  # using humidity sensor eqn
     return "Welcome! The current temp is %2.2f and the humidity is %2.2f" %(temp,humidity) #Return the temp and humidty
 
-
 @smart_door_app.route("/whoentered")  #static route 1
 def whoEntered():
     response = send_file(photo_path, mimetype = 'image/jpg') #Send the image of the last person who entered
@@ -241,8 +236,8 @@ def whoEntered():
 
 @smart_door_app.route("/intruder")  #Static route 2 
 def intruder():
-    response = send_file(video_path, mimetype = 'video/mp4') # return 5 second video of the intruder
-                    #mimetype= MP4 is a file container format, while H. 264 is actually a video compression 
+    response = send_file(video_path, mimetype = 'video/h.264') # return 5 second video of the intruder
+                    
                     # codec that requires a video container to host the encoded video.
     return response
 
@@ -261,7 +256,6 @@ def opendoor(pwd): #Take the passwrod from user
         return "Door is Opened"
     else:
         return "Wrong Password" #If wrong password, send failure msg
-
 
 #key pad function as presented in the lecture
 def keypad(): 
@@ -338,3 +332,4 @@ def keypad():
 if __name__ == "__main__":#Main function - start the app on port 5060
     setup_board() #Setup ALL GPIOS and Communicaiton ports, LCD, RFID, ADC
     smart_door_app.run(debug=True, host = '0.0.0.0', port = 5060) 
+
