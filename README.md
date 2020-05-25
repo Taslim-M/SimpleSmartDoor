@@ -1,5 +1,5 @@
 # SimpleSmartDoor
-A simple smart door system using RaspberryPi 3 and Flask server
+A simple smart door system using RaspberryPi 3 and Flask server. Please note the complete code was never compiled due to unexpected circumstances. Majority of the individual elements are tested, but the complete version may require modifications.
 
 Repository owners - See contributors
 
